@@ -1,8 +1,8 @@
-import React, { FC, useState, createContext, CSSProperties } from 'react'
-import classNames from 'classnames'
-import { MenuItemProps } from './menuItem'
+import React, { FC, useState, createContext, CSSProperties } from "react";
+import classNames from "classnames";
+import { MenuItemProps } from "./menuItem";
 
-type MenuMode = 'horizontal' | 'vertical'
+type MenuMode = "horizontal" | "vertical";
 export interface MenuProps {
   /**默认 active 的菜单项的索引值 */
   defaultIndex?: string;
@@ -19,10 +19,10 @@ interface IMenuContext {
   index: string;
   onSelect?: (selectedIndex: string) => void;
   mode?: MenuMode;
-  defaultOpenSubMenus?: string[];  
+  defaultOpenSubMenus?: string[];
 }
 
-export const MenuContext = createContext<IMenuContext>({index: '0'})
+export const MenuContext = createContext<IMenuContext>({ index: "0" });
 /**
  * 为网站提供导航功能的菜单。支持横向纵向两种模式，支持下拉菜单。
  * ~~~js
@@ -30,49 +30,68 @@ export const MenuContext = createContext<IMenuContext>({index: '0'})
  * ~~~
  */
 export const Menu: FC<MenuProps> = (props) => {
-  const { className, mode, style, children, defaultIndex, onSelect, defaultOpenSubMenus } = props
-  const [ currentActive, setActive ] = useState(defaultIndex)
-  const classes = classNames('viking-menu', className, {
-    'menu-vertical': mode === 'vertical',
-    'menu-horizontal': mode !== 'vertical',
-  })
+  const {
+    className,
+    mode,
+    style,
+    children,
+    defaultIndex,
+    onSelect,
+    defaultOpenSubMenus,
+  } = props;
+  const [currentActive, setActive] = useState(defaultIndex);
+  const classes = classNames("viking-menu", className, {
+    "menu-vertical": mode === "vertical",
+    "menu-horizontal": mode !== "vertical",
+  });
   const handleClick = (index: string) => {
-    setActive(index)
-    if(onSelect) {
-      onSelect(index)
+    setActive(index);
+    if (onSelect) {
+      onSelect(index);
     }
-  }
+  };
   const passedContext: IMenuContext = {
-    index: currentActive ? currentActive : '0',
+    index: currentActive ? currentActive : "0",
     onSelect: handleClick,
     mode,
     defaultOpenSubMenus,
-  }
+  };
   const renderChildren = () => {
     return React.Children.map(children, (child, index) => {
-      const childElement = child as React.FunctionComponentElement<MenuItemProps>
-      const { displayName } = childElement.type
-      if (displayName === 'MenuItem' || displayName === 'SubMenu') {
+      const childElement = child as React.FunctionComponentElement<
+        MenuItemProps
+      >;
+      const { displayName } = childElement.type;
+      if (displayName === "MenuItem" || displayName === "SubMenu") {
         return React.cloneElement(childElement, {
-          index: index.toString()
-        })
+          index: index.toString(),
+        });
       } else {
-        console.error("Warning: Menu has a child which is not a MenuItem component")
+        console.error(
+          "Warning: Menu has a child which is not a MenuItem component",
+        );
       }
-    })
-  }
+    });
+  };
   return (
     <ul className={classes} style={style} data-testid="test-menu">
       <MenuContext.Provider value={passedContext}>
         {renderChildren()}
       </MenuContext.Provider>
     </ul>
-  )
-}
+  );
+};
+
+// "qiniu/fincy-partner-admin/other/202079/d0d23d716188431538769d59054f5f4a.jpg,
+// qiniu/fincy-partner-admin/other/202079/377698bd6f1e47543fb6c1843dc49707.jpg,
+// qiniu/fincy-partner-admin/other/202079/b655c641564146043414ac29c014e27e.png,
+// qiniu/fincy-partner-admin/other/202079/888ebf18c3824b7f3ab45ee0a90204f2.jpg,
+// qiniu/fincy-partner-admin/other/202079/2928bcf56ccc4f5a32781d767ee1149e.jpg"
+
 Menu.defaultProps = {
-  defaultIndex: '0',
-  mode: 'horizontal',
+  defaultIndex: "0",
+  mode: "horizontal",
   defaultOpenSubMenus: [],
-}
+};
 
 export default Menu;
